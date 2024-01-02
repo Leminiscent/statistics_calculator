@@ -4,20 +4,22 @@
 #include <cmath>
 #include <algorithm>
 
+// Constructor: Initializes the data member and sorts the input data.
 statistics::statistics(const std::vector<double> &input_data) : data(input_data)
 {
     std::sort(data.begin(), data.end());
 }
 
+// Calculate and return the mean of the data.
 double statistics::mean() const
 {
     return std::accumulate(data.begin(), data.end(), 0.0) / data.size();
 }
 
+// Calculate and return the median of the data.
 double statistics::median() const
 {
     size_t n = data.size();
-
     if (n % 2 != 0)
     {
         return data[n / 2];
@@ -25,49 +27,55 @@ double statistics::median() const
     return (data[(n / 2) - 1] + data[n / 2]) / 2.0;
 }
 
+// Calculate and return the mode(s) of the data.
 std::vector<double> statistics::mode() const
 {
-    int max_count = 0;
     std::vector<double> modes;
+    if (data.empty())
+        return modes;
+
+    int max_count = 1;
+    int current_count = 1;
     double previous = data[0];
-    int count = 1;
+    modes.push_back(previous);
 
     for (size_t i = 1; i < data.size(); i++)
     {
         if (data[i] == previous)
         {
-            count++;
+            current_count++;
         }
         else
         {
-            if (count > max_count)
+            if (current_count > max_count)
             {
-                max_count = count;
+                max_count = current_count;
                 modes.clear();
-                modes.emplace_back(previous);
+                modes.push_back(data[i - 1]);
             }
-            else if (count == max_count)
+            else if (current_count == max_count)
             {
-                modes.emplace_back(previous);
+                modes.push_back(data[i - 1]);
             }
-            count = 1;
-            previous = data[i];
+            current_count = 1;
         }
+        previous = data[i];
     }
 
-    if (count > max_count)
+    if (current_count > max_count)
     {
         modes.clear();
-        modes.emplace_back(previous);
+        modes.push_back(data.back());
     }
-    else if (count == max_count)
+    else if (current_count == max_count)
     {
-        modes.emplace_back(previous);
+        modes.push_back(data.back());
     }
 
     return modes;
 }
 
+// Calculate and return the variance of the data.
 double statistics::variance() const
 {
     double mean_value = mean();
@@ -81,11 +89,13 @@ double statistics::variance() const
     return variance_sum / (data.size() - 1);
 }
 
+// Calculate and return the standard deviation of the data.
 double statistics::standard_deviation() const
 {
     return std::sqrt(variance());
 }
 
+// Print all statistics to console and to a file named "output.txt".
 void statistics::print_statistics() const
 {
     std::cout << *this;
@@ -94,13 +104,14 @@ void statistics::print_statistics() const
 
     if (!output_file)
     {
-        std::cout << "Error opening the output file. Exiting program." << std::endl;
+        std::cerr << "Error opening the output file. Exiting program." << std::endl;
         exit(1);
     }
     output_file << *this;
     output_file.close();
 }
 
+// Overload the << operator to format the printing of statistics.
 std::ostream &operator<<(std::ostream &os, const statistics &stats)
 {
     os << std::fixed << std::setprecision(1);
@@ -117,7 +128,6 @@ std::ostream &operator<<(std::ostream &os, const statistics &stats)
     os << "Median: " << stats.median() << std::endl;
 
     std::vector<double> modes = stats.mode();
-
     if (modes.size() == 1)
     {
         os << "Mode: " << modes[0] << std::endl;
