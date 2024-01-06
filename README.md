@@ -1,6 +1,6 @@
 # Statistics Calculator Program
 
-By Lemuel Nogueira
+**Author**: Lemuel Nogueira
 
 ## Overview
 This program is a comprehensive tool for calculating basic statistical measures from a given dataset. It is developed in C++ and provides functionalities to compute mean, median, mode, variance, and standard deviation of a series of numbers. The program is user-friendly and guides the user through the process of entering data and viewing the results.
